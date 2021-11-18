@@ -1,0 +1,12 @@
+{
+  "workspace": "www",
+  "server": {
+    "port": 8546,
+    "host": "127.0.0.1"
+  },
+  "applicationName": "test",
+  "APIInterface": "./controllers",
+  "testKey": "testValue",
+  "panelPosition": "right",
+  "sandboxFrame": true
+}

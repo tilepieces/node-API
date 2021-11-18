@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+<label for="myfile">Select a file:</label>
+<input type="file" id="myfile" name="myfile" accept=".zip"><br><br>
+<section id=target></section>
+<button onclick=triggerChange()>t</button>
+<script>
+    myfile.addEventListener("change",e=>{
+        console.log(e.target.files);
+        console.log(e.target.value);
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            console.log(evt.target.result);
+            target.innerHTML = evt.target.result
+        };
+        console.log(e.target.files[0])
+        reader.readAsText(e.target.files[0]);
+        e.target.value = null;
+    });
+    function triggerChange(){
+        let list = new DataTransfer();
+        let file = new File(["content"], "filename.txt");
+        list.items.add(file);
+        myfile.files = list.files;
+        myfile.dispatchEvent(new Event("change"))
+    }
+</script>
+</body>
+</html>

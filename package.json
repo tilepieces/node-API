@@ -1,0 +1,26 @@
+{
+  "name": "@tilepieces/node-API",
+  "version": "1.0.0",
+  "description": "",
+  "main": "controllers.js",
+  "scripts": {
+    "test": "node test/index",
+    "test-w-f": "node test-with-framework/index"
+  },
+  "files": [
+    "lib"
+  ],
+  "keywords": [],
+  "dependencies": {
+    "@tilepieces/server": "file:../server",
+    "busboy": "^0.3.1",
+    "glob": "^7.1.6",
+    "minimatch": "^3.0.4",
+    "ncp": "^2.0.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "open": "^7.0.0"
+  }
+}

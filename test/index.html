@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>node API tilepieces test</title>
+    <style>
+        .larger{
+            font-size:larger;
+            margin:5px 0;
+            border-bottom:1px solid #ccc
+        }
+        .large{
+            font-size:large;
+            margin:5px 0;
+        }
+        .success{
+            color:green;
+        }
+        .error{
+            color:red;
+        }
+        .success::before{
+            content:"\2713";
+            padding-right:10px;
+        }
+        .error::before{
+            content:"\2715";
+            padding-right:10px;
+        }
+    </style>
+</head>
+<body>
+<h1>node API tilepieces test ( with tilepieces-storage-interface-http library )</h1>
+<section id="log-section">
+
+</section>
+<script src="components/tilepieces-storage-interface-http/tilepieces-storage-interface-http.bundle.js"></script>
+<script src="testUtils/assert.js"></script>
+<script src="testUtils/componentModel.js"></script>
+<script src="testUtils/logOnDocument.js"></script>
+<script>
+    // tilepieces-storage-interface-http library can't work without this
+    tilepieces = {};
+</script>
+<script src="testSuite-create-project.js"></script>
+<script src="testSuite-update-read.js"></script>
+<script src="testSuite-search.js"></script>
+<script src="testSuite-create-component-from-project-and-add-subcomponent.js"></script>
+<script src="testSuite-create-components-with-files.js"></script>
+<script src="testSuite-delete-components.js"></script>
+<script src="testSuite-project-reading.js"></script>
+<script src="testSuite-copy.js"></script>
+<script src="testSuite-delete.js"></script>
+<script src="testSuite-settings.js"></script>
+<script src="testSuite-delete-project.js"></script>
+<script src="runTests.js"></script>
+</body>
+</html>
