@@ -31,11 +31,12 @@ module.exports = async function(req,res,$self){
             var project = settings.projects[projectsI];
             project.localComponents = {};
             for(var name in project.components){
-                var pkg = project.components[name];
-                var componentFile = await fsPromises.readFile(
-                    path.normalize((project.path||$self.basePath) + "/" + pkg.path + "/tilepieces.component.json")
-                );
-                project.localComponents[name] = Object.assign(JSON.parse(componentFile),pkg);
+              var pkg = project.components[name];
+              var componentFile = await fsPromises.readFile(
+                  path.normalize((project.path||$self.basePath) + "/" + pkg.path + "/tilepieces.component.json")
+              );
+              project.localComponents[name] = Object.assign(JSON.parse(componentFile),pkg);
+              project.components[name] = project.localComponents[name];
             }
             /*
             alternative isComponent
