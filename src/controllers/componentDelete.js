@@ -41,40 +41,40 @@ module.exports = async function(req,res,$self){
             }
             catch(e){}
             if(newSettings.local){
-                var currentComponent = components[project.name];
-                var isSavedComponent = false;
-                if(!project.components || typeof project.components !== "object" || Array.isArray(project.components)) {
-                    project.components = {}
-                }
-                newSettings.array.forEach(component=> {
-                    for(var k in project.components)
-                        if(k == component.name || k.startsWith(component.name + "/")) {
-                            if(newSettings.deleteFiles){
-                                deleteFolder($self.serverPath + project.components[k].path);
-                            }
-                            delete project.components[k];
+              var currentComponent = components[project.name];
+              var isSavedComponent = false;
+              if(!project.components || typeof project.components !== "object" || Array.isArray(project.components)) {
+                  project.components = {}
+              }
+              newSettings.array.forEach(component=> {
+                for(var k in project.components)
+                    if(k == component.name || k.startsWith(component.name + "/")) {
+                        if(newSettings.deleteFiles){
+                            deleteFolder($self.serverPath + project.components[k].path);
                         }
-                    if(currentComponent){
-                        for(var ki in currentComponent.components)
-                            if(ki == component.name || ki.startsWith(component.name + "/")) {
-                                delete currentComponent.components[ki];
-                                isSavedComponent = true;
-                            }
+                        delete project.components[k];
                     }
-                });
-                var projectToSave = Object.assign({},project);
-                delete projectToSave.path;
-                // update project data
-                await fsPromises.writeFile((project.path||$self.basePath) + "/tilepieces.project.json",
-                    JSON.stringify(projectToSave,null,2),'utf8');
-                var componentToSave = Object.assign({},currentComponent);
-                for(var k in componentToSave.components){
-                    var c = componentToSave.components[k];
-                    componentToSave.components[k] = {name:c.name,path:c.path}
+                if(currentComponent){
+                    for(var ki in currentComponent.components)
+                        if(ki == component.name || ki.startsWith(component.name + "/")) {
+                            delete currentComponent.components[ki];
+                            isSavedComponent = true;
+                        }
                 }
-                delete componentToSave.path;
-                isSavedComponent && await fsPromises.writeFile($self.serverPath + "/tilepieces.component.json",
-                    JSON.stringify(componentToSave,null,2), 'utf8');
+              });
+              var projectToSave = Object.assign({},project);
+              delete projectToSave.path;
+              // update project data
+              await fsPromises.writeFile((project.path||$self.basePath) + "/tilepieces.project.json",
+                  JSON.stringify(projectToSave,null,2),'utf8');
+              var componentToSave = Object.assign({},currentComponent);
+              for(var k in componentToSave.components){
+                  var c = componentToSave.components[k];
+                  componentToSave.components[k] = {name:c.name,path:c.path}
+              }
+              delete componentToSave.path;
+              isSavedComponent && await fsPromises.writeFile($self.serverPath + "/tilepieces.component.json",
+                  JSON.stringify(componentToSave,null,2), 'utf8');
             }
             else{
                 newSettings.array.forEach(component=> {

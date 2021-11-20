@@ -54,48 +54,67 @@ module.exports = async function(req,res,$self){
             catch(e){}
             var component = newSettings.component;
             if (newSettings.local) {
-                var currentComponent = components[project.name];
-                var isSavedComponent = false;
-                if (!project.components || typeof project.components !== "object" || Array.isArray(project.components)) {
-                    project.components = {}
-                }
-                component.path = component.path || ("/" + (project.componentPath || componentDir) + "/" + component.name);
-                project.components[component.name] = {name:component.name,path:component.path};
-                await createDir($self.serverPath + component.path);
-                if (currentComponent &&
-                    component.name.startsWith(currentComponent.name + "/")) {
-                    if(!currentComponent.components ||
-                        typeof project.components !== "object" ||
-                        Array.isArray(currentComponent.components)) {
-                        currentComponent.components = {}
-                    }
-                    currentComponent.components[component.name] = {name:component.name,path:component.path};
-                    isSavedComponent = true;
-                }
-                // save the component json
-                var componentPathJSON = (project.path||$self.basePath) + component.path + "/tilepieces.component.json";
-                var componentToSave = Object.assign({},component);
-                for(var k in componentToSave.components){
-                    var c = componentToSave.components[k];
-                    componentToSave.components[k] = {name:c.name,path:c.path}
-                }
-                delete componentToSave.path;
-                await fsPromises.writeFile(componentPathJSON, JSON.stringify(componentToSave,null,2),'utf8');
-                // save the project components reference
-                var projectToSave = Object.assign({},project);
+              var nameSplitted = component.name.split("/")
+              var isSubComponent = nameSplitted.length > 1;
+              var currentComponent = components[project.name];
+              var isSavedComponent = false;
+              if (!project.components || typeof project.components !== "object" || Array.isArray(project.components)) {
+                  project.components = {}
+              }
+              component.path = component.path || ("/" + (project.componentPath || componentDir) + "/" + component.name);
+              project.components[component.name] = {name:component.name,path:component.path};
+              await createDir($self.serverPath + component.path);
+              if (currentComponent &&
+                  component.name.startsWith(currentComponent.name + "/")) {
+                  if(!currentComponent.components ||
+                      typeof project.components !== "object" ||
+                      Array.isArray(currentComponent.components)) {
+                      currentComponent.components = {}
+                  }
+                  currentComponent.components[component.name] = {name:component.name,path:component.path};
+                  isSavedComponent = true;
+              }
+              // save the component json
+              var componentPathJSON = (project.path||$self.basePath) + component.path + "/tilepieces.component.json";
+              var componentToSave = Object.assign({},component);
+              for(var k in componentToSave.components){
+                  var c = componentToSave.components[k];
+                  componentToSave.components[k] = {name:c.name,path:c.path}
+              }
+              delete componentToSave.path;
+              await fsPromises.writeFile(componentPathJSON, JSON.stringify(componentToSave,null,2),'utf8');
+              // save the project components reference
+              if(!isSubComponent) {
+                var projectToSave = Object.assign({}, project);
                 delete projectToSave.path;
                 // update project data
-                await fsPromises.writeFile((project.path||$self.basePath) + "/tilepieces.project.json",
-                    JSON.stringify(projectToSave,null,2),'utf8');
-                // save the project component json
-                componentToSave = Object.assign({},currentComponent);
-                for(var k in componentToSave.components){
-                    var c = componentToSave.components[k];
-                    componentToSave.components[k] = {name:c.name,path:c.path}
-                }
-                delete componentToSave.path;
-                isSavedComponent && await fsPromises.writeFile($self.serverPath + "/tilepieces.component.json",
-                    JSON.stringify(componentToSave,null,2), 'utf8');
+                await fsPromises.writeFile((project.path || $self.basePath) + "/tilepieces.project.json",
+                  JSON.stringify(projectToSave, null, 2), 'utf8');
+              }
+              else{ // save the correct record in the parent comment
+                nameSplitted.pop();
+                var componentParent = project;
+                nameSplitted.forEach(v=>{
+                  console.log(v,JSON.stringify(componentParent.components));
+                  componentParent = componentParent.components[v]
+                })
+                console.log(componentParent);
+                var getParentJsonPath = path.resolve((project.path||$self.basePath) + componentParent.path )
+                   + "/tilepieces.component.json";
+                var getParentJsonRaw = await fsPromises.readFile(getParentJsonPath, 'utf8');
+                var getParentJson = JSON.parse(getParentJsonRaw);
+                getParentJson.components[component.name] = {name:component.name,path:component.path};
+                await fsPromises.writeFile(getParentJsonPath,JSON.stringify(getParentJson,null,2), 'utf8');
+              }
+              // save the project component json
+              componentToSave = Object.assign({},currentComponent);
+              for(var k in componentToSave.components){
+                  var c = componentToSave.components[k];
+                  componentToSave.components[k] = {name:c.name,path:c.path}
+              }
+              delete componentToSave.path;
+              isSavedComponent && await fsPromises.writeFile($self.serverPath + "/tilepieces.component.json",
+                  JSON.stringify(componentToSave,null,2), 'utf8');
             }
             else {
                 component.path = component.path ||
