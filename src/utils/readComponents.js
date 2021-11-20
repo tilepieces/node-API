@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const fsPromises = require('fs').promises;
-const readComponentsJSON = require(__dirname + "/readDir");
+const readComponentsJSON = require(__dirname + "/readComponentsJSON");
 module.exports = function (basePath){
     return new Promise((res,rej)=>{
         fs.readFile(basePath + "components.json", 'utf8',async (err,data)=>{
