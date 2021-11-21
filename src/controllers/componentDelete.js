@@ -8,6 +8,8 @@ const fs = require("fs");
 const path = require("path");
 const moveToProject = require("../utils/moveToProject");
 const deleteFolder = require("../utils/deleteFolder");
+const getComponentsFlat = require("../utils/getComponentsFlat");
+const readComponentsJSON = require("../utils/readComponentsJSON");
 module.exports = async function(req,res,$self){
   var currentProject = req.headers['current-project'];
   if(currentProject && currentProject != $self.projectName){
@@ -41,7 +43,7 @@ module.exports = async function(req,res,$self){
       }
       catch(e){}
       var component = newSettings.component;
-        if(newSettings.local){
+      if(newSettings.local){
           var currentComponent = components[project.name];
           var isSavedComponent = false;
           if(!project.components || typeof project.components !== "object" || Array.isArray(project.components)) {
@@ -49,7 +51,7 @@ module.exports = async function(req,res,$self){
           }
           var nameSplitted = component.name.split("/")
           var isSubComponent = nameSplitted.length > 1;
-          var parentComponentIsCurrentComponent = nameSplitted.length == 2 && nameSplitted[0] == currentComponent.name;
+          var parentComponentIsCurrentComponent = currentComponent && nameSplitted.length == 2 && nameSplitted[0] == currentComponent.name;
           var deletedPath = "";
           for(var k in project.components)
             if(k == component.name) {
@@ -78,18 +80,16 @@ module.exports = async function(req,res,$self){
               JSON.stringify(projectToSave, null, 2), 'utf8');
           }
           else if(!parentComponentIsCurrentComponent){ // save the correct record in the parent component
+            var openComponents = await readComponentsJSON(project.components,(project.path||$self.basePath) + "/");
+            var componentsFlat = getComponentsFlat(openComponents);
+            var pathToDelete = componentsFlat[nameSplitted.join("/")].path;
             nameSplitted.pop();
-            var componentParent = project;
-            var pathToDelete = (project.path||$self.basePath)
-            nameSplitted.forEach(v=>{
-              componentParent = componentParent.components[v];
-              pathToDelete+="/" + componentParent.path;
-            })
+            var pathParent = componentsFlat[nameSplitted.join("/")].path;
             if(newSettings.deleteFiles){
               console.log("delete component at path " + newSettings.deleteFiles);
-              deleteFolder(pathToDelete);
+              deleteFolder(path.resolve((project.path||$self.basePath) + "/" + pathToDelete));
             }
-            var getParentJsonPath = path.resolve((project.path||$self.basePath) + componentParent.path )
+            var getParentJsonPath = path.resolve((project.path||$self.basePath) + "/" + pathParent)
               + "/tilepieces.component.json";
             var getParentJsonRaw = await fsPromises.readFile(getParentJsonPath, 'utf8');
             var getParentJson = JSON.parse(getParentJsonRaw);
@@ -106,7 +106,7 @@ module.exports = async function(req,res,$self){
           isSavedComponent && await fsPromises.writeFile($self.serverPath + "/tilepieces.component.json",
               JSON.stringify(componentToSave,null,2), 'utf8');
         }
-        else{
+      else{
           if (components[component.name]) {
             if(newSettings.deleteFiles){
               deleteFolder(components[component.name].path);
@@ -121,7 +121,7 @@ module.exports = async function(req,res,$self){
           await fsPromises.writeFile($self.basePath + "components.json",
               JSON.stringify(newComponents), 'utf8');
         }
-        writeResponse(res, {result: 1}, $self.headers);
+      writeResponse(res, {result: 1}, $self.headers);
     });
   }
   catch(e){

@@ -1,8 +1,10 @@
-function getComponentsFlat(components = {},total = {}){
+function getComponentsFlat(components = {},total = {},path = ""){
   for(var k in components){
     var c = components[k]
     total[k] = c;
-    getComponentsFlat(c.components,total)
+    var componentPath = path + c.path;
+    total[k].path = componentPath;
+    getComponentsFlat(c.components,total,componentPath)
   }
   return total;
 }

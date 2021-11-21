@@ -5,6 +5,8 @@ const readSettings = require("../utils/readSettings");
 const readProjects = require("../utils/readProjects");
 const readComponents = require("../utils/readComponents");
 const updateProjects = require("../utils/updateProjects");
+const getComponentsFlat = require("../utils/getComponentsFlat");
+const readComponentsJSON = require("../utils/readComponentsJSON");
 const fsPromises = require('fs').promises;
 const writeResponse = require("../utils/writeResponse");
 const createDir = require("../utils/createDir");
@@ -57,7 +59,7 @@ module.exports = async function(req,res,$self){
               var nameSplitted = component.name.split("/")
               var isSubComponent = nameSplitted.length > 1;
               var currentComponent = components[project.name];
-              var parentComponentIsCurrentComponent = nameSplitted.length == 2 && nameSplitted[0] == currentComponent.name;
+              var parentComponentIsCurrentComponent = currentComponent && nameSplitted.length == 2 && nameSplitted[0] == currentComponent.name;
               var isSavedComponent = false;
               if (!project.components || typeof project.components !== "object" || Array.isArray(project.components)) {
                   project.components = {}
@@ -65,6 +67,9 @@ module.exports = async function(req,res,$self){
               component.path = component.path || ("/" + (project.componentPath || componentDir) + "/" + component.name);
               project.components[component.name] = {name:component.name,path:component.path};
               await createDir($self.serverPath + component.path);
+              if(isSubComponent && parentComponentIsCurrentComponent){
+                component.path = component.path.replace(currentComponent.path,"");
+              }
               if (currentComponent &&
                   component.name.startsWith(currentComponent.name + "/")) {
                   if(!currentComponent.components ||
@@ -94,13 +99,17 @@ module.exports = async function(req,res,$self){
               }
               else if(!parentComponentIsCurrentComponent){ // save the correct record in the parent component
                 nameSplitted.pop();
-                var componentParent = project;
-                nameSplitted.forEach(v=>componentParent = componentParent.components[v])
-                var getParentJsonPath = path.resolve((project.path||$self.basePath) + componentParent.path )
+                var openComponents = await readComponentsJSON(project.components,(project.path||$self.basePath) + "/");
+                var componentsFlat = getComponentsFlat(openComponents);
+                var pathParent = componentsFlat[nameSplitted.join("/")].path;
+                var getParentJsonPath = path.resolve((project.path||$self.basePath) + "/" + pathParent)
                    + "/tilepieces.component.json";
                 var getParentJsonRaw = await fsPromises.readFile(getParentJsonPath, 'utf8');
                 var getParentJson = JSON.parse(getParentJsonRaw);
-                getParentJson.components[component.name] = {name:component.name,path:component.path};
+                console.log("[---------HERE!---------]->",component.path,pathParent);
+                getParentJson.components[component.name] =
+                {name:component.name,
+                  path:component.path.replace(pathParent,"")};
                 await fsPromises.writeFile(getParentJsonPath,JSON.stringify(getParentJson,null,2), 'utf8');
               }
               // save the main component json
@@ -165,8 +174,9 @@ module.exports = async function(req,res,$self){
             writeResponse(res, {result: 1}, $self.headers);
         }
         catch(e){
-            return writeResponse(res,
-                {result: 0, err: e.toString()}, $self.headers);
+          console.error("[error from component create]",e);
+          return writeResponse(res,
+              {result: 0, err: e.toString()}, $self.headers);
         }
     });
     req.pipe(busboy);

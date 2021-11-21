@@ -17,7 +17,6 @@ async function readComponentsJSON(components,startingPath = "",basePath = ""){
     }
     component.components = await readComponentsJSON(component.components,startPath,basePath);
     components[k] = Object.assign({},component,c);
-
   }
   return components;
 }
