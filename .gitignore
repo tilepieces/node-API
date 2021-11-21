@@ -1,2 +1,6 @@
 .idea
 node_modules
+components.json
+projects.json
+package-lock.json
+www

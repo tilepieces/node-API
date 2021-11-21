@@ -1,4 +1,4 @@
-const server = require("@tilepieces/server");
+const server = require("@tilepieces/node-server");
 const open = require('open');
 const path = require('path');
 const settingsPath = process.cwd() + path.sep + "./settings.json";

@@ -5,6 +5,7 @@
   "main": "controllers.js",
   "scripts": {
     "test": "node test/index",
+    "test-inspect":"node --trace-warnings --inspect test/index",
     "test-w-f": "node test-with-framework/index"
   },
   "files": [
@@ -12,7 +13,7 @@
   ],
   "keywords": [],
   "dependencies": {
-    "@tilepieces/server": "file:../server",
+    "@tilepieces/node-server": "file:../node-server",
     "busboy": "^0.3.1",
     "glob": "^7.1.6",
     "minimatch": "^3.0.4",

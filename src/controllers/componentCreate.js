@@ -57,6 +57,7 @@ module.exports = async function(req,res,$self){
               var nameSplitted = component.name.split("/")
               var isSubComponent = nameSplitted.length > 1;
               var currentComponent = components[project.name];
+              var parentComponentIsCurrentComponent = nameSplitted.length == 2 && nameSplitted[0] == currentComponent.name;
               var isSavedComponent = false;
               if (!project.components || typeof project.components !== "object" || Array.isArray(project.components)) {
                   project.components = {}
@@ -91,14 +92,10 @@ module.exports = async function(req,res,$self){
                 await fsPromises.writeFile((project.path || $self.basePath) + "/tilepieces.project.json",
                   JSON.stringify(projectToSave, null, 2), 'utf8');
               }
-              else{ // save the correct record in the parent comment
+              else if(!parentComponentIsCurrentComponent){ // save the correct record in the parent component
                 nameSplitted.pop();
                 var componentParent = project;
-                nameSplitted.forEach(v=>{
-                  console.log(v,JSON.stringify(componentParent.components));
-                  componentParent = componentParent.components[v]
-                })
-                console.log(componentParent);
+                nameSplitted.forEach(v=>componentParent = componentParent.components[v])
                 var getParentJsonPath = path.resolve((project.path||$self.basePath) + componentParent.path )
                    + "/tilepieces.component.json";
                 var getParentJsonRaw = await fsPromises.readFile(getParentJsonPath, 'utf8');
@@ -106,7 +103,7 @@ module.exports = async function(req,res,$self){
                 getParentJson.components[component.name] = {name:component.name,path:component.path};
                 await fsPromises.writeFile(getParentJsonPath,JSON.stringify(getParentJson,null,2), 'utf8');
               }
-              // save the project component json
+              // save the main component json
               componentToSave = Object.assign({},currentComponent);
               for(var k in componentToSave.components){
                   var c = componentToSave.components[k];

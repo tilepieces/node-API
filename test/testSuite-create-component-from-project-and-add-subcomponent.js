@@ -50,8 +50,8 @@ async function createComponentFromProject(){
     var newComponentModel = componentModel("test/local-test");
     newComponentModel.path = "/components/test/local-test";
     await storageInterface.createComponent({
-        local : true,
-        component : newComponentModel
+      local : true,
+      component : newComponentModel
     });
     settings = await storageInterface.getSettings();
     projectTest = settings.settings.projects.find(v=>v.name == "test");
@@ -91,22 +91,28 @@ async function createComponentFromProject(){
             ,"check if /components.json is correct")
         ,"success");
     // check the project json
-    var projectJson = await storageInterface.read("tilepieces.project.json").then(res=>JSON.parse(res));
-    logOnDocument(
-        assert(projectJson.name == "test" &&
-            Object.values(projectJson.components).length == 2 &&
-            projectJson.components["test/local-test"].path == "/components/test/local-test" &&
-            projectJson.components["local-test"].path == "/components/local-test"
-            ,"check if /project.json is correct")
-        ,"success");
-    // now check if there are the inner components files
-    var cJson1 = await storageInterface.read("components/test/local-test/tilepieces.component.json")
-        .then(res=>JSON.parse(res));
-    var cJson2 = await storageInterface.read("components/local-test/tilepieces.component.json")
-        .then(res=>JSON.parse(res));
-    logOnDocument(
-        assert(cJson1.name == "test/local-test" &&
-            cJson2.name == "local-test"
-            ,"check if inner components json is correct")
-        ,"success");
+  var projectJson = await storageInterface.read("tilepieces.project.json").then(res=>JSON.parse(res));
+  logOnDocument(
+      assert(projectJson.name == "test" &&
+          Object.values(projectJson.components).length == 1 &&
+          projectJson.components["local-test"].path == "/components/local-test"
+          ,"check if /tilepieces.project.json is correct")
+      ,"success");
+  var componentJson = await storageInterface.read("tilepieces.component.json").then(res=>JSON.parse(res));
+  logOnDocument(
+    assert(componentJson.name == "test" &&
+      Object.values(componentJson.components).length == 1 &&
+      componentJson.components["test/local-test"].path == "/components/test/local-test"
+      ,"check if /tilepieces.component.json is correct")
+    ,"success");
+  // now check if there are the inner components files
+  var cJson1 = await storageInterface.read("components/test/local-test/tilepieces.component.json")
+      .then(res=>JSON.parse(res));
+  var cJson2 = await storageInterface.read("components/local-test/tilepieces.component.json")
+      .then(res=>JSON.parse(res));
+  logOnDocument(
+      assert(cJson1.name == "test/local-test" &&
+          cJson2.name == "local-test"
+          ,"check if inner components json is correct")
+      ,"success");
 }

@@ -4,8 +4,8 @@ async function deleteComponents(){
     logOnDocument("- delete global component test2 (with files)","large");
     //
     await storageInterface.deleteComponent({
-        array : [{name:"test2"}],
-        deleteFiles : true
+      component : {name:"test2"},
+      deleteFiles : true
     });
     var settings = await storageInterface.getSettings();
     logOnDocument(
@@ -20,8 +20,8 @@ async function deleteComponents(){
     }
 
     await storageInterface.deleteComponent({
-        local:true,
-        array : [{name:"inner-test-with-files"}]
+      local:true,
+      component : {name:"inner-test-with-files"}
     });
     settings = await storageInterface.getSettings();
     var projectTest = settings.settings.projects.find(v=>v.name == "test");
@@ -37,9 +37,9 @@ async function deleteComponents(){
     logOnDocument("- remove local component test/local-test (with files)","large");
     //
     await storageInterface.deleteComponent({
-        local:true,
-        array : [{name:"test/local-test"}],
-        deleteFiles : true
+      local:true,
+      component : {name:"test/local-test"},
+      deleteFiles : true
     });
     settings = await storageInterface.getSettings();
     projectTest = settings.settings.projects.find(v=>v.name == "test");
