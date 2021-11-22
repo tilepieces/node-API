@@ -115,4 +115,54 @@ async function createComponentFromProject(){
           cJson2.name == "local-test"
           ,"check if inner components json is correct")
       ,"success");
+  // ------------- //
+  c = componentModel("test/local-test/sub");
+  await storageInterface.createComponent({
+    local: true,
+    component : c
+  });
+  var settings = await storageInterface.getSettings();
+  var projectTest = settings.settings.projects.find(v=>v.name == "test");
+  logOnDocument(
+    assert(projectTest.componentsFlat["test/local-test/sub"].name == "test/local-test/sub" &&
+      projectTest.componentsFlat["test/local-test/sub"].path == "/components/test/local-test/sub",
+      "expect local component 'test/local-test/sub'")
+    ,"success");
+  mainJson = await storageInterface.read("components/test/local-test/sub/tilepieces.component.json")
+    .then(res=>JSON.parse(res));
+  var assert1 = (mainJson.name == "test/local-test/sub");
+  mainJson2 = await storageInterface.read("components/test/local-test/tilepieces.component.json").then(res=>JSON.parse(res));
+  var assert2 = (mainJson2.components["test/local-test/sub"] &&
+  mainJson2.components["test/local-test/sub"].path == "/sub");
+  mainJson3 = await storageInterface.read("/tilepieces.component.json").then(res=>JSON.parse(res));
+  var assert3= (!mainJson3.components["test/local-test/sub"] && mainJson3.components["test/local-test"]);
+  logOnDocument(
+    assert(assert1&&assert2&&assert3)
+    ,"success");
+  // ------------- //
+  // ------------- //
+  c = componentModel("local-test/sub");
+  await storageInterface.createComponent({
+    local : true,
+    component : c
+  });
+  var settings = await storageInterface.getSettings();
+  var projectTest = settings.settings.projects.find(v=>v.name == "test");
+  logOnDocument(
+    assert(projectTest.componentsFlat["local-test/sub"].name == "local-test/sub" &&
+      projectTest.componentsFlat["local-test/sub"].path == "/components/local-test/sub",
+      "expect local component 'local-test/sub'")
+    ,"success");
+  // read the main json
+  mainJson = await storageInterface.read("components/local-test/sub/tilepieces.component.json").then(res=>JSON.parse(res));
+  var assert1 = (mainJson.name == "local-test/sub");
+  mainJson2 = await storageInterface.read("components/local-test/tilepieces.component.json").then(res=>JSON.parse(res));
+  var assert2 = (mainJson2.components["local-test/sub"] &&
+  mainJson2.components["local-test/sub"].path == "/sub");
+  mainJson3 = await storageInterface.read("/tilepieces.project.json").then(res=>JSON.parse(res));
+  var assert3= (!mainJson3.components["local-test/sub"] && mainJson3.components["local-test"]);
+  logOnDocument(
+    assert(assert1&&assert2&&assert3)
+    ,"success");
+  // ------------- //
 }

@@ -21,7 +21,6 @@ async function createComponentWithFiles(){
     //
     test2Files = files.map(v=>{
         var obj = Object.assign({},v);
-        obj.path="test2/"+obj.path;
         return obj;
     });
     var componentModelTest2 = componentModel("test2");
@@ -48,7 +47,6 @@ async function createComponentWithFiles(){
     //
     var innerTestFiles = files.map(v=>{
         var obj = Object.assign({},v);
-        obj.path="inner-test-with-files/"+obj.path;
         return obj;
     });
     await storageInterface.createComponent({
