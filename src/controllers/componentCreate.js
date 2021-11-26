@@ -96,8 +96,11 @@ module.exports = async function(req,res,$self){
               {name:component.name,
                 path:component.path};
               for(var k in parent.components){
+                var newObj = {};
                 var pc = parent.components[k];
-                pc.path = pc.path.replace(parent.path,"")
+                newObj.path = pc.path.replace(parent.path,"");
+                newObj.name = pc.name;
+                pc = newObj;
               }
               var getParentJsonPath = $self.serverPath + parent.path
                 + "/tilepieces.component.json";
