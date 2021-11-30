@@ -8,9 +8,6 @@
     "test-inspect":"node --trace-warnings --inspect test/index",
     "test-w-f": "node test-with-framework/index"
   },
-  "files": [
-    "lib"
-  ],
   "keywords": [],
   "dependencies": {
     "@tilepieces/node-server": "file:../node-server",
