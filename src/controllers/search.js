@@ -21,7 +21,7 @@ module.exports = async function (req, res, $self) {
         return writeResponse(res, {result: 0, error: e}, $self.headers);
       }
     }
-    var serverPath = $self.serverPath;
+    var serverPath = $self.serverPath || $self.basePath;
     if (s.componentName) {
       var components = JSON.parse(await fsPromises.readFile($self.basePath + "components.json", 'utf8'));
       var c = components[s.componentName];

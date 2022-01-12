@@ -20,7 +20,7 @@ module.exports = function (name, $self) {
       path.join($self.workspace, name);
     if (prEntry) {
       try {
-        var checkDir = await isDir($self.serverPath);
+        var checkDir = await isDir($self.serverPath || $self.basePath);
         if (!checkDir)
           return rej("path associated with project is not a directory.");
       } catch (e) {

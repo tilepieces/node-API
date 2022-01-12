@@ -36,7 +36,7 @@ module.exports = async function (req, res, $self) {
     return writeResponse(res,
       {result: 0, error: "no project name activated", path}, $self.headers);
 
-  var rootPath = prEntry ? prEntry.path : $self.serverPath;
+  var rootPath = prEntry ? prEntry.path : ($self.serverPath || $self.basePath);
   var filePath = p.resolve(rootPath, path);
   isDir(filePath)
     .then(async isDir => {

@@ -41,7 +41,7 @@ module.exports = async function (req, res, $self) {
     if (!updateFile.path)
       return writeResponse(res,
         {result: 0, path: updateFile.path, error: "no path"}, $self.headers);
-    var finalPath = path.join($self.serverPath, updateFile.path);
+    var finalPath = path.join($self.serverPath || $self.basePath, updateFile.path);
     var parent = path.dirname(finalPath);
     try {
       var actualParent = await isDir(parent);

@@ -21,7 +21,7 @@ module.exports = async function (req, res, $self) {
   if (!newPath || !newPath.length)
     return writeResponse(res, {result: 0, error: "no new path", path}, $self.headers);
   console.log("[COPY]", url, path, currentProject);
-  var filePath = p.join($self.serverPath, path);
+  var filePath = p.join($self.serverPath || $self.basePath, path);
   fs.stat(filePath, (noExists, stat) => {
     if (noExists)
       return writeResponse(res, {result: 0, error: "path not found", filePath}, $self.headers);
