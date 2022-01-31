@@ -27,7 +27,7 @@ module.exports = function (projectName, projects, basePath) {
       return {name: v.name, path: v.path, components: v.components}
     })
     fs.writeFile(basePath + "projects.json",
-      JSON.stringify(projects), 'utf8', err => {
+      JSON.stringify(projects,null,2), 'utf8', err => {
         if (err)
           reject(err);
         else

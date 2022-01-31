@@ -25,7 +25,7 @@ module.exports = async function (req, res, $self) {
   fs.stat(filePath, (noExists, stat) => {
     if (noExists)
       return writeResponse(res, {result: 0, error: "path not found", filePath}, $self.headers);
-    var newServerPath = p.join($self.serverPath, newPath);
+    var newServerPath = p.join($self.serverPath || $self.basePath, newPath);
     //if(stat.isDirectory() && newServerPath.startsWith(filePath))
     //return writeResponse(res, {result: 0, error: "try to put a directory into itself", filePath,newPath}, $self.headers);
     if (move)
