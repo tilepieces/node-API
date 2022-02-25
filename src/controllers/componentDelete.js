@@ -20,11 +20,11 @@ module.exports = async function (req, res, $self) {
     }
   }
   console.log("[COMPONENT DELETE] ", req.method, req.url, currentProject);
-  try {
-    var body = [];
-    req.on('data', (chunk) => {
-      body.push(chunk);
-    }).on('end', async () => {
+  var body = [];
+  req.on('data', (chunk) => {
+    body.push(chunk);
+  }).on('end', async () => {
+    try {
       body = Buffer.concat(body).toString();
       var newSettings = JSON.parse(body);
       try {
@@ -77,16 +77,22 @@ module.exports = async function (req, res, $self) {
           await fsPromises.writeFile((project.path || $self.basePath) + "/tilepieces.project.json",
             JSON.stringify(projectToSave, null, 2), 'utf8');
         } else if (!parentComponentIsCurrentComponent) { // save the correct record in the parent component
-          var openComponents = await readComponentsJSON(project.components, (project.path || $self.basePath) + "/");
+          var openComponents = nameSplitted[0] == currentComponent.name ?
+            components :
+            await readComponentsJSON(project.components, (project.path || $self.basePath) + "/");
           var componentsFlat = getComponentsFlat(openComponents);
           var pathToDelete = componentsFlat[nameSplitted.join("/")].path;
           nameSplitted.pop();
           var pathParent = componentsFlat[nameSplitted.join("/")].path;
           if (newSettings.deleteFiles) {
-            console.log("delete component at path " + newSettings.deleteFiles);
-            deleteFolder(path.resolve((project.path || $self.basePath) + "/" + pathToDelete));
+            var finalPathToDelete = nameSplitted[0] == currentComponent.name ? // current component path is already with (project.path || $self.basePath=
+              pathToDelete :
+              path.resolve((project.path || $self.basePath) + "/" + pathToDelete);
+            deleteFolder(finalPathToDelete);
           }
-          var getParentJsonPath = path.resolve((project.path || $self.basePath) + "/" + pathParent)
+          var getParentJsonPath = (nameSplitted[0] == currentComponent.name ?
+            pathParent :
+            path.resolve((project.path || $self.basePath) + "/" + pathParent))
             + "/tilepieces.component.json";
           var getParentJsonRaw = await fsPromises.readFile(getParentJsonPath, 'utf8');
           var getParentJson = JSON.parse(getParentJsonRaw);
@@ -118,9 +124,9 @@ module.exports = async function (req, res, $self) {
           JSON.stringify(newComponents), 'utf8');
       }
       writeResponse(res, {result: 1}, $self.headers);
-    });
-  } catch (e) {
-    return writeResponse(res,
-      {result: 0, err: e.toString()}, $self.headers);
-  }
+    } catch (e) {
+      return writeResponse(res,
+        {result: 0, err: e.toString()}, $self.headers);
+    }
+  });
 };

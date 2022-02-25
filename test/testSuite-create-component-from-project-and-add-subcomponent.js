@@ -35,7 +35,7 @@ async function createComponentFromProject() {
     , "success");
   var compcomponents = settings.settings.components["test"].components;
   logOnDocument(
-    assert(!compcomponents || !compcomponents.find(v => v.name == "local-test"),
+    assert(!compcomponents || !compcomponents["local-test"],
       "while there is not a 'components' record in 'component' (no update, because is a component of the project, not of the component)")
     , "success");
   var readNewDir = await storageInterface.read("components/local-test");
@@ -165,4 +165,20 @@ async function createComponentFromProject() {
     assert(assert1 && assert2 && assert3)
     , "success");
   // ------------- //
+  // recreate "test" main component, to be sure components are saved
+  await storageInterface.createComponent({
+    component: componentModel("test")
+  });
+  var settings = await storageInterface.getSettings();
+  var projectTest = settings.settings.projects.find(v => v.name == "test");
+  logOnDocument(
+    assert(projectTest.componentsFlat["test/local-test/sub"].name == "test/local-test/sub" &&
+      projectTest.componentsFlat["test/local-test/sub"].path == "/components/test/local-test/sub",
+      "expect local component 'test/local-test/sub' after 'test' recreation")
+    , "success");
+  logOnDocument(
+    assert(projectTest.componentsFlat["local-test/sub"].name == "local-test/sub" &&
+      projectTest.componentsFlat["local-test/sub"].path == "/components/local-test/sub",
+      "expect local component 'local-test/sub'  after 'test' recreation")
+    , "success");
 }

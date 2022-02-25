@@ -121,6 +121,7 @@ module.exports = async function (req, res, $self) {
       } else {
         component.path = component.path ||
           $self.serverPath; // "components/comp"
+        component.components = components.components || components[component.name]?.components || {};
         components[component.name] = {name: component.name, path: component.path};
         var componentToSave = Object.assign({}, component);
         for (var k in componentToSave.components) {

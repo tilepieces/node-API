@@ -54,8 +54,35 @@ async function deleteComponents() {
   }
   if (read)
     logOnDocument("components/local-test/sub was not deleted", "error")
+
   // ------ //
+  // test for broken subcomponent
+  c = componentModel("test/local-test/sub2");
+  await storageInterface.createComponent({
+    local: true,
+    component: c
+  });
+  await storageInterface.deleteComponent({
+    local: true,
+    component: {name: "test/local-test/sub2"},
+    deleteFiles: true
+  });
+  settings = await storageInterface.getSettings();
+  projectTest = settings.settings.projects.find(v => v.name == "test");
+  logOnDocument(
+    assert(typeof projectTest.componentsFlat["test/local-test/sub2"] == "undefined",
+      "test/local-test correctly deleted in project 'test/local-test/sub2' record")
+    , "success");
+  var read;
+  try {
+    read = await storageInterface.read("components/test/local-test/sub2");
+  } catch (e) {
+    logOnDocument("components/test/local-test/sub2 correctly deleted", "success")
+  }
+  if (read)
+    logOnDocument("components/test/local-test/sub2 was not deleted", "error")
   //
+
   logOnDocument("- remove local component test/local-test (with files)", "large");
   await storageInterface.deleteComponent({
     local: true,
