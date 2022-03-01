@@ -34,10 +34,12 @@ module.exports = async function (req, res, $self) {
           if (err)
             writeResponse(res, {result: 0, error: err.toString()}, $self.headers);
           else
-            writeResponse(res, {result: 1}, $self.headers);
+            writeResponse(res, {
+              newPath:newServerPath.replace(($self.serverPath || $self.basePath)+p.sep,"").replace(/\\/g,'/')
+              ,result: 1}, $self.headers);
         });
     else {
-      if (filePath == newServerPath) {
+      if (fs.existsSync(newServerPath)) {
         // if file exists, rename it adding a number
         var pathParse = p.parse(newServerPath);
         // Returns:
@@ -54,14 +56,15 @@ module.exports = async function (req, res, $self) {
           newServerPath = fileWithoutExt + newNumber++ + pathParse.ext;
           console.log(fileWithoutExt, number, newServerPath);
         }
-
       }
       ncp(filePath, newServerPath, function (err) {
         if (err)
           writeResponse(res,
             {result: 0, error: err.toString()}, $self.headers);
         else
-          writeResponse(res, {result: 1}, $self.headers);
+          writeResponse(res, {result: 1,
+            newPath:newServerPath.replace(($self.serverPath || $self.basePath)+p.sep,"").replace(/\\/g,'/')
+          }, $self.headers);
       });
     }
   });
