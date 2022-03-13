@@ -5,16 +5,16 @@
   "main": "controllers.js",
   "scripts": {
     "test": "node test/index",
-    "test-inspect":"node --trace-warnings --inspect test/index",
+    "test-inspect": "node --trace-warnings --inspect test/index",
     "test-w-f": "node test-with-framework/index"
   },
   "keywords": [],
   "dependencies": {
     "@tilepieces/node-server": "file:../node-server",
-    "busboy": "^0.3.1",
+    "busboy": "^1.4.0",
+    "fs-extra": "^10.0.1",
     "glob": "^7.1.6",
-    "minimatch": "^3.0.4",
-    "ncp": "^2.0.0"
+    "minimatch": "^3.0.4"
   },
   "author": "",
   "license": "ISC",

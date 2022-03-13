@@ -46,8 +46,9 @@ module.exports = async function (req, res, $self) {
         {result: 0, error: "project not found"}, $self.headers, 404);
   }
   if (p.match(/^[\\/]/))
-    p = p.substr(1, p.length);
+    p = p.substring(1);
   var filePath = path.join(startPath, p);
+  console.log(filePath)
   fs.stat(filePath, async (accessError, stats) => {
     if (accessError)
       return writeResponse(res,

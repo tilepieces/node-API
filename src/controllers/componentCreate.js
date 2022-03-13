@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require("path");
 const Busboy = require('busboy');
 const readSettings = require("../utils/readSettings");
@@ -23,7 +23,7 @@ module.exports = async function (req, res, $self) {
     }
   }
   console.log("[COMPONENT CREATE] ", req.method, req.url, currentProject);
-  var busboy = new Busboy({headers: req.headers});
+  var busboy = Busboy({headers: req.headers});
   var files = [];
   var newSettings;
   busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
@@ -47,7 +47,7 @@ module.exports = async function (req, res, $self) {
       newSettings = JSON.parse(newSettings);
       var projects = await readProjects($self.basePath);
       var project = projects.find(v => v.name == $self.projectName);
-      var compPathInProj = $self.serverPath + "/" + (project.componentPath || componentDir) + "/";
+      var compPathInProj = $self.serverPath + "/" + (project?.componentPath || componentDir) + "/";
       var components = {};
       try {
         components = await readComponents($self.basePath);
@@ -57,7 +57,26 @@ module.exports = async function (req, res, $self) {
       if (newSettings.local) {
         component.path = component.path || ("/" + (project.componentPath || componentDir) + "/" + component.name);
         compPathInProj = $self.serverPath + component.path + "/";
-        await createDir(compPathInProj);
+        !newSettings.copyInProject && await createDir(compPathInProj);
+        // copy in project start
+        if(newSettings.copyInProject){
+          if(!project){
+            return writeResponse(res,
+              {result: 0, error: "create component copy in project called but no project setted"}, $self.headers);
+          }
+          var globalComponent = components && components[component.name];
+          if(!globalComponent)
+            return writeResponse(res,
+              {result: 0, error: "create component copy in project called but no global component called " + component.name}, $self.headers);
+          try {
+            await fs.copy(globalComponent.path, compPathInProj)
+          }
+          catch(err){
+              return writeResponse(res,
+                {result: 0, error: err.toString()}, $self.headers);
+          };
+        }
+        // copy in project end
         // update or create the JSON start
         var componentPathJSON = $self.serverPath + component.path + "/tilepieces.component.json";
         var currentJson;
@@ -72,6 +91,7 @@ module.exports = async function (req, res, $self) {
         if (!componentToSave.components)
           componentToSave.components = {};
         delete componentToSave.path;
+        !newSettings.copyInProject &&
         await fsPromises.writeFile(componentPathJSON, JSON.stringify(componentToSave, null, 2), 'utf8');
         // update or create the JSON, end.
         var nameSplitted = component.name.split("/")

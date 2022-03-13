@@ -17,7 +17,7 @@ module.exports = async function (req, res, $self) {
   var {method, url} = req;
   var rootPath = $self.serverPath;
   console.log("[UPDATE] ", method, url, currentProject);
-  var busboy = new Busboy({headers: req.headers});
+  var busboy = Busboy({headers: req.headers});
   var updateFile = {
     fileArray: null,
     path: "",

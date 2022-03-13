@@ -45,6 +45,27 @@ async function createComponentWithFiles() {
     assert(fetchd.searchResult[0] == "mock.html", "component search works on global component")
     , "success");
   //
+  logOnDocument("- create test2 in current project", "large");
+  await storageInterface.createComponent({
+    component: {name:"test2"},
+    local:true,
+    copyInProject:true
+  });
+  settings = await storageInterface.getSettings();
+  var test2 = settings.settings?.projects[0]?.components?.test2;
+  logOnDocument(
+    assert(test2,'settings.projects[0].components.test2== "test2"')
+    , "success");
+  var fetchConf = await storageInterface.read(test2.path + "/tilepieces.component.json");
+  logOnDocument(
+    "tilepieces.component.json has been created in component 'test2'<pre>" + fetchConf + "</pre>"
+    , "success");
+  fetchC = await storageInterface.read(test2.path + "/mock.html");
+  logOnDocument(
+    assert(fetchC == mockHTML, "component file created and readed")
+    , "success");
+  //
+  //
   var innerTestFiles = files.map(v => {
     var obj = Object.assign({}, v);
     return obj;

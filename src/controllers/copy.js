@@ -1,9 +1,7 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 const p = require("path");
 const writeResponse = require("../utils/writeResponse");
 const moveToProject = require("../utils/moveToProject");
-var ncp = require('ncp').ncp;
-ncp.limit = 16;
 module.exports = async function (req, res, $self) {
   var {url} = req;
   var urlParams = new URLSearchParams(url);
@@ -57,7 +55,11 @@ module.exports = async function (req, res, $self) {
           console.log(fileWithoutExt, number, newServerPath);
         }
       }
-      ncp(filePath, newServerPath, function (err) {
+      fs.copy('/tmp/myfile', '/tmp/mynewfile', err => {
+        if (err) return console.error(err)
+        console.log('success!')
+      }) // copies file
+      fs.copy(filePath, newServerPath, function (err) {
         if (err)
           writeResponse(res,
             {result: 0, error: err.toString()}, $self.headers);
