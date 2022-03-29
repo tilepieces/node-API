@@ -1,24 +1,28 @@
 {
-  "name": "@tilepieces/node-API",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@tilepieces-official/node-api",
+  "version": "0.1.0",
+  "description": "These are the node",
   "main": "controllers.js",
   "scripts": {
     "test": "node test/index",
-    "test-inspect": "node --trace-warnings --inspect test/index",
-    "test-w-f": "node test-with-framework/index"
+    "test-inspect": "node --trace-warnings --inspect test/index"
   },
   "keywords": [],
   "dependencies": {
-    "@tilepieces/node-server": "file:../node-server",
+    "@tilepieces/node-server": "latest",
     "busboy": "^1.4.0",
     "fs-extra": "^10.0.1",
     "glob": "^7.1.6",
     "minimatch": "^3.0.4"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "simone di nuovo",
+  "license": "MIT",
   "devDependencies": {
     "open": "^7.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tilepieces/node-API"
+  },
+  "homepage": "https://tilepieces.net/documentation/api/storage/index.html"
 }
