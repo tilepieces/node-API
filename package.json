@@ -1,15 +1,18 @@
 {
   "name": "@tilepieces-official/node-api",
-  "version": "0.1.0",
-  "description": "These are the node",
+  "version": "0.1.1",
+  "description": "These are the read/write api for the node application",
   "main": "controllers.js",
   "scripts": {
     "test": "node test/index",
     "test-inspect": "node --trace-warnings --inspect test/index"
   },
-  "keywords": [],
+  "keywords": [
+    "api",
+    "utilities"
+  ],
   "dependencies": {
-    "@tilepieces/node-server": "latest",
+    "@tilepieces-official/node-server": "latest",
     "busboy": "^1.4.0",
     "fs-extra": "^10.0.1",
     "glob": "^7.1.6",
