@@ -1,14 +1,17 @@
 const createDir = require("./createDir");
 const readFile = require("./readFile");
 const updateProjects = require("./updateProjects");
+const readSettings = require("./readSettings");
 const fsPromises = require('fs').promises;
 module.exports = function (serverPath, projects, projectName, basePath) {
   return new Promise(async (resolve, reject) => {
-    var newProjectJson = {
+    var settings = await readSettings(basePath);
+    var newProjectJsonTemplate = {
       name: projectName,
       path: serverPath,
       components: {}
     }
+    var newProjectJson = Object.assign({},settings,newProjectJsonTemplate);
     try {
       await createDir(serverPath);
       try {
