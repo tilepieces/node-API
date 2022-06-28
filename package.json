@@ -1,6 +1,6 @@
 {
   "name": "@tilepieces-official/node-api",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "These are the read/write api for the node application",
   "main": "controllers.js",
   "scripts": {

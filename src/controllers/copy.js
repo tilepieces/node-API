@@ -50,23 +50,21 @@ module.exports = async function (req, res, $self) {
         var number = fileWithoutExt.match(/\d+$/);
         var newNumber = number ? +number[0]++ : 0;
         newServerPath = fileWithoutExt + newNumber + pathParse.ext;
-        while (fs.existsSync(newServerPath)) {
+        while (fs.existsSync(newServerPath))
           newServerPath = fileWithoutExt + newNumber++ + pathParse.ext;
-          console.log(fileWithoutExt, number, newServerPath);
-        }
+        newServerPath = p.join($self.serverPath || $self.basePath, newServerPath);
       }
-      fs.copy('/tmp/myfile', '/tmp/mynewfile', err => {
-        if (err) return console.error(err)
-        console.log('success!')
-      }) // copies file
       fs.copy(filePath, newServerPath, function (err) {
         if (err)
           writeResponse(res,
             {result: 0, error: err.toString()}, $self.headers);
-        else
-          writeResponse(res, {result: 1,
-            newPath:newServerPath.replace(($self.serverPath || $self.basePath)+p.sep,"").replace(/\\/g,'/')
+        else {
+          console.log(($self.serverPath || $self.basePath) )
+          writeResponse(res, {
+            result: 1,
+            newPath: newServerPath.replace(($self.serverPath || $self.basePath) + p.sep, "").replace(/\\+/g, '/')
           }, $self.headers);
+        }
       });
     }
   });
