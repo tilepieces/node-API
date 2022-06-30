@@ -52,17 +52,17 @@ module.exports = async function (req, res, $self) {
         newServerPath = fileWithoutExt + newNumber + pathParse.ext;
         while (fs.existsSync(newServerPath))
           newServerPath = fileWithoutExt + newNumber++ + pathParse.ext;
-        newServerPath = p.join($self.serverPath || $self.basePath, newServerPath);
       }
       fs.copy(filePath, newServerPath, function (err) {
         if (err)
           writeResponse(res,
             {result: 0, error: err.toString()}, $self.headers);
         else {
-          console.log(($self.serverPath || $self.basePath) )
+          var projectBasePath = ($self.serverPath || $self.basePath) + p.sep;
+          console.log("projectBasePath",projectBasePath);
           writeResponse(res, {
             result: 1,
-            newPath: newServerPath.replace(($self.serverPath || $self.basePath) + p.sep, "").replace(/\\+/g, '/')
+            newPath: newServerPath.replace(p.normalize(projectBasePath), "").replace(/\\+/g, '/')
           }, $self.headers);
         }
       });
