@@ -107,4 +107,24 @@ async function deleteComponents() {
   }
   if (read)
     logOnDocument("components/test/local-test was not deleted", "error")
+
+  // test when delete a global component and the components is a project
+  logOnDocument("- delete global component called test3. test3 is also a project( project will be deleted )", "large");
+  await storageInterface.create("test3");
+
+  await storageInterface.createComponent({
+    component: componentModel("test3")
+  });
+  await storageInterface.deleteComponent({
+    component: {name: "test3"},
+    deleteFiles: true
+  });
+  var settings = await storageInterface.getSettings();
+  var assertment = !settings.settings.projects.find(v => v.name == "test3") && !settings.settings.components.test3;
+  logOnDocument(
+    assert(assertment,
+      "test done")
+    , "success");
+  // reset to test
+  await storageInterface.create("test");
 }

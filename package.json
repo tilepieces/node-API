@@ -1,6 +1,6 @@
 {
   "name": "@tilepieces-official/node-api",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "These are the read/write api for the node application",
   "main": "controllers.js",
   "scripts": {
@@ -12,8 +12,8 @@
     "utilities"
   ],
   "dependencies": {
-    "@tilepieces-official/node-server": "^0.1.5",
-    "busboy": "^1.4.0",
+    "@tilepieces-official/node-server": "^0.1.6",
+    "busboy": "^1.6.0",
     "fs-extra": "^10.0.1",
     "glob": "7.2.0"
   },

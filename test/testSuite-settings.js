@@ -1,5 +1,5 @@
 async function settings() {
-  logOnDocument("settings");
+  logOnDocument("settings","larger");
   await storageInterface.setSettings(
     {
       projectSettings: {

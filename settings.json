@@ -6,7 +6,6 @@
   },
   "applicationName": "test",
   "APIInterface": "./controllers",
-  "testKey": "testValue",
   "panelPosition": "right",
   "sandboxFrame": true
 }

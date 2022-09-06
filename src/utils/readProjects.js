@@ -7,15 +7,19 @@ module.exports = function (basePath) {
       if (err)
         rej(err);
       else {
-        var projects;
+        var projects,projectsClone;
         try {
-          projects = JSON.parse(data);
-          for (var i = 0; i < projects.length; i++) {
-            var p = projects[i];
+          projectsClone = JSON.parse(data);
+          projects = [];
+          for (var i = 0; i < projectsClone.length; i++) {
+            var p = projectsClone[i];
             var projectPathJSON = path.normalize(
               (p.path || basePath) + "/tilepieces.project.json");
-            var projectFile = await fsPromises.readFile(projectPathJSON, 'utf8');
-            projects[i] = Object.assign({}, JSON.parse(projectFile), p);
+            try{
+              var projectFile = await fsPromises.readFile(projectPathJSON, 'utf8');
+              projects.push(Object.assign({}, JSON.parse(projectFile), p));
+            }
+            catch(e){}
           }
         } catch (e) {
           console.log("[error in parsing project]", data);
